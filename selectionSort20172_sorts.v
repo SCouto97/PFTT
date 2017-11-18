@@ -311,14 +311,15 @@ Qed.
 
 Lemma forall_leq_head: forall y h l, Forall (fun z => y <= z) (h::l) -> y <= h.
 Proof.
-  intros y h.
   induction l.
-  -intro.
-   SearchAbout Forall.
-   Admitted.
-    
-
-  
+  - intros.
+    inversion H; subst.
+    assumption.
+  - intro.
+    inversion H; subst.
+    exact H2.
+Qed.
+      
 Inductive Permutation : list nat -> list nat -> Prop :=
 | perm_nil: Permutation nil nil
 | perm_skip x l l' : Permutation l l' -> Permutation (x::l) (x::l')
@@ -328,16 +329,12 @@ Inductive Permutation : list nat -> list nat -> Prop :=
 
 Lemma forall_permutation: forall y l l', Permutation l l' -> Forall (fun z => y <= z) l -> Forall (fun z => y <= z) l'.
 Proof.
-  intros y l.
+  intros y l l' H1 H2.  
   induction l'.
-  -intros H H1.
-   apply Forall_nil.
-  -intros H H1.
-   apply Forall_cons.
-   +admit.
-   +apply IHl'.
-    *admit.
-    
+  -apply Forall_nil.
+  -apply Forall_cons.
+   +apply forall_leq_head with l'.
+Admitted.
   
 Lemma Permutation_implies_equiv: forall l l', Permutation l l' -> equiv l l'.
 Proof.
@@ -345,8 +342,7 @@ Proof.
   -intro l'.
    intro.
    unfold equiv.
-   admit.
-  -admit.
+Admitted.  
 
 Lemma list_length_ind: forall (A : Type) (P : list A -> Prop),
        P nil ->
@@ -385,39 +381,79 @@ Proof.
     apply perm_nil.
    +intro.
     unfold equiv in H.
-    
-  -
-Qed.  
+Admitted.  
   
 Lemma Permutation_equiv: forall l l', Permutation l l' <-> equiv l l'.
 Proof.
-Admitted.
+  induction l.
+  - split.
+    + apply Permutation_implies_equiv.
+    + apply equiv_implies_Permutation.
+  - intro.
+    split.
+    + apply Permutation_implies_equiv.
+    + apply equiv_implies_Permutation.
+Qed.
 
 Lemma forall_equiv: forall y l l', Forall (fun z => y <= z) l -> equiv l l' -> Forall (fun z => y <= z) l'.
 Proof.
-Admitted.
+  intros.
+  apply forall_permutation with l.
+  - apply equiv_implies_Permutation.
+    assumption.
+  - assumption.
+Qed.
 
 Lemma select_min_leq: forall h l m l', select_min h l = (m, l') -> m <= h.
 Proof.
   intros h l; revert h; induction l using list_length_ind.
-Admitted.     
-
+  -intros h m l'.
+   intro H.
+   simpl in H.
+   inversion H.
+   reflexivity.
+  -intros h m l' H'.   
+   apply H with l' l'.
+   +apply select_min_length in H'.
+Admitted.
+   
+   
 Lemma select_min_smallest:
   forall x l y l', select_min x l = (y,l') ->
      Forall (fun z => y <= z) l'.
 Proof.
   intros x l; revert x; induction l using list_length_ind.
+  -intros x y l' H.
+   simpl in H.
+   inversion H; subst.
+   apply Forall_nil.
+  -intros x y l' H'.
+   apply H with l x.
+   +admit.
+   +
 Admitted.
 
 Lemma select_forall: forall m l, ordenada l ->
                                  Forall (fun z => m <= z) l ->
                                  ordenada (m :: l).
 Proof.
-Admitted.
+  intros m l H H'.
+  induction l.
+  -apply lista_1.
+  -apply lista_nv.
+   +assumption.
+   +apply forall_leq_head with l.
+    assumption.
+Qed.    
 
 Theorem selectionSort_sorts: forall l, ordenada (select l).
 Proof.
-Admitted.
+  intro l.
+  induction l using list_length_ind.
+  -admit.
+  -
+  
+Admitted.   
 
 (** Exercício extra. *)
 Lemma select_min_min: forall h1 l1 m1 m2 h2 l2 l3, select_min h1 l1 = (m1, h2::l2) -> select_min h2 l2 = (m2, l3) -> m1 <= m2.
