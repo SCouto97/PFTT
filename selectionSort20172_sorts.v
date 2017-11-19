@@ -329,21 +329,31 @@ Inductive Permutation : list nat -> list nat -> Prop :=
 
 Lemma forall_permutation: forall y l l', Permutation l l' -> Forall (fun z => y <= z) l -> Forall (fun z => y <= z) l'.
 Proof.
-  intros y l l' H1 H2.  
+  intros y l l'.
   induction l'.
-  -apply Forall_nil.
-  -apply Forall_cons.
+  -intros H1 H2.
+   apply Forall_nil.
+  -intros H1 H2.
+   apply Forall_cons.
    +apply forall_leq_head with l'.
+    revert H1 H2.
+    admit.                      (*Generalizar l'?*)
+   +apply IHl'.  
+    *admit.
+    *assumption.
+    
 Admitted.
   
 Lemma Permutation_implies_equiv: forall l l', Permutation l l' -> equiv l l'.
 Proof.
-  induction l.
-  -intro l'.
-   intro.
-   unfold equiv.
-Admitted.  
-
+  intros l l'.
+  induction l'.
+  -intro H1.
+   admit.
+  -intro H1.
+   admit.
+Admitted.
+  
 Lemma list_length_ind: forall (A : Type) (P : list A -> Prop),
        P nil ->
        (forall (l : list A), (forall (l' : list A), length l' < length l -> P l') -> P l) ->
@@ -381,6 +391,13 @@ Proof.
     apply perm_nil.
    +intro.
     unfold equiv in H.
+    admit.
+  -induction l'.
+   +intro.
+    unfold equiv in H; simpl.
+    admit.
+   +admit.
+
 Admitted.  
   
 Lemma Permutation_equiv: forall l l', Permutation l l' <-> equiv l l'.
