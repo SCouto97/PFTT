@@ -329,21 +329,26 @@ Inductive Permutation : list nat -> list nat -> Prop :=
 
 Lemma forall_permutation: forall y l l', Permutation l l' -> Forall (fun z => y <= z) l -> Forall (fun z => y <= z) l'.
 Proof.
-  intros y l l'.
-  induction l'.
-  -intros H1 H2.
-   apply Forall_nil.
-  -intros H1 H2.
+  intros y l l' H1 H2.
+  induction H1.
+  -assumption.
+  -inversion H2; subst.
    apply Forall_cons.
-   +apply forall_leq_head with l'.
-    revert H1 H2.
-    admit.                      (*Generalizar l'?*)
-   +apply IHl'.  
-    *admit.
+   +assumption.
+   +apply IHPermutation.
+    assumption.
+  -inversion H2; subst.
+   inversion H3; subst.
+   apply Forall_cons.
+   +assumption.
+  +apply Forall_cons.
     *assumption.
-    
-Admitted.
-  
+    *assumption.
+  -apply IHPermutation2.
+    apply IHPermutation1.
+    assumption.
+Qed.  
+
 Lemma Permutation_implies_equiv: forall l l', Permutation l l' -> equiv l l'.
 Proof.
   intros l l'.
@@ -428,15 +433,31 @@ Proof.
    intro H.
    simpl in H.
    inversion H.
-   reflexivity.
+   auto.
   -intros h m l' H'.   
-   apply H with l' l'.
-   +apply select_min_length in H'.
-Admitted.
-   
-   
-Lemma select_min_smallest:
-  forall x l y l', select_min x l = (y,l') ->
+   generalize dependent l.
+   intro l.
+   case l.
+   + intros H1 H2.
+     inversion H2.
+     auto.
+   + intros n l0 H1 H2.
+     simpl in H2.
+     destruct(le_lt_dec h n).
+     *destruct(select_min h l0) eqn: H3.
+      inversion H2; subst.
+      apply H1 with l0 l2.
+      **apply lt_n_Sn.
+      **assumption.
+     *destruct(select_min n l0).
+      inversion H2; subst.
+      apply le_trans with n.
+      **apply H1 with l0 l2.
+        ***simpl.
+           apply lt_n_Sn.
+        ***
+      **
+Lemma select_min_smallest: forall x l y l', select_min x l = (y,l') ->
      Forall (fun z => y <= z) l'.
 Proof.
   intros x l; revert x; induction l using list_length_ind.
