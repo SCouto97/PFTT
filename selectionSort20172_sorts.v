@@ -468,12 +468,12 @@ Proof.
       **apply H1 with l0 l2.
         ***simpl.
            apply lt_n_Sn.
-        ***admit.
+        ***destruct(select_min n l0).
+           admit.
       **admit.
 
 Admitted.        
-Lemma select_min_smallest: forall x l y l', select_min x l = (y,l') ->
-     Forall (fun z => y <= z) l'.
+Lemma select_min_smallest: forall x l y l', select_min x l = (y,l') -> Forall (fun z => y <= z) l'.
 Proof.
   intros x l; revert x; induction l using list_length_ind.
   -intros x y l' H1.
@@ -500,11 +500,17 @@ Qed.
 
 Theorem selectionSort_sorts: forall l, ordenada (select l).
 Proof.
-  intro l.
-  induction l using list_length_ind.
-  -admit.
-  -
-  
+  induction l using list_length_ind.   
+  -rewrite select_equation.
+   apply lista_vazia.
+  -rewrite select_equation.
+   destruct l.
+   +apply lista_vazia.
+   +destruct(select_min n l).
+    apply select_forall.
+    *apply H.
+     admit.     
+    *apply forall_permutation.
 Admitted.   
 
 (** Exercício extra. *)
