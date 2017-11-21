@@ -410,13 +410,14 @@ Qed.
 
 Lemma equiv_implies_Permutation: forall l l', equiv l l' -> Permutation l l'.
 Proof.
-  intros l l'.
-  revert l.
   induction l using list_length_ind.
-  -intro.
+  -intros l' H.
+   apply equiv_nil in H; subst.
+   apply perm_nil.
+  -intros l' H'.
    admit.
-  -admit.
-Admitted.    
+Admitted.   
+   
 Lemma Permutation_equiv: forall l l', Permutation l l' <-> equiv l l'.
 Proof.
   induction l.
@@ -471,7 +472,8 @@ Proof.
            admit.
       **admit.
 
-Admitted.        
+Admitted.
+
 Lemma select_min_smallest: forall x l y l', select_min x l = (y,l') -> Forall (fun z => y <= z) l'.
 Proof.
   intros x l; revert x; induction l using list_length_ind.
@@ -486,9 +488,12 @@ Proof.
    +intro.
     apply Forall_nil.
    +intros n l0 H'.
-    apply Forall_cons.
-    * admit.
-      *admit.
+    inversion H'.
+    apply select_min_length in H'.
+    inversion H'; subst.
+    apply H with l0 n.
+    *admit.
+    *admit.
 Admitted.
   
 Lemma select_forall: forall m l, ordenada l ->
@@ -509,14 +514,21 @@ Proof.
   induction l using list_length_ind.   
   -rewrite select_equation.
    apply lista_vazia.
-  -rewrite select_equation.
+  -generalize dependent l.
+   intro l.
+   rewrite select_equation.
    case l.
-   +apply lista_vazia.
-   +intros n l0.
+   +intros l'.
+     apply lista_vazia.
+   +intros n l0 IHl'.
     destruct(select_min n l0) eqn: H'.
-    apply select_min_equiv in H'.
-    apply equiv_implies_Permutation in H'.
-    
+    apply select_forall.
+    *apply select_min_length in H'.
+     apply IHl'.
+     simpl.
+     admit.
+    *apply select_min_equiv in H'.
+     admit.
 Admitted.   
 
 (** Exercício extra. *)
