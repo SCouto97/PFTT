@@ -410,14 +410,13 @@ Qed.
 
 Lemma equiv_implies_Permutation: forall l l', equiv l l' -> Permutation l l'.
 Proof.
-  intros l l'.  revert l.  induction l using list_length_ind.
-  -intro H.
-   apply equiv_nil in H.
-   subst.
-   apply perm_nil.
-  -intro H2.
-Admitted.
-   
+  intros l l'.
+  revert l.
+  induction l using list_length_ind.
+  -intro.
+   admit.
+  -admit.
+Admitted.    
 Lemma Permutation_equiv: forall l l', Permutation l l' <-> equiv l l'.
 Proof.
   induction l.
@@ -468,7 +467,7 @@ Proof.
       **apply H1 with l0 l2.
         ***simpl.
            apply lt_n_Sn.
-        ***destruct(select_min n l0).
+        ***subst.
            admit.
       **admit.
 
@@ -481,8 +480,15 @@ Proof.
    inversion H1; subst.
    apply Forall_nil.
   -intros x y l' H1.
-   
-  
+   generalize dependent l'.
+   intro l'.
+   case l'.
+   +intro.
+    apply Forall_nil.
+   +intros n l0 H'.
+    apply Forall_cons.
+    * admit.
+      *admit.
 Admitted.
   
 Lemma select_forall: forall m l, ordenada l ->
@@ -504,13 +510,13 @@ Proof.
   -rewrite select_equation.
    apply lista_vazia.
   -rewrite select_equation.
-   destruct l.
+   case l.
    +apply lista_vazia.
-   +destruct(select_min n l).
-    apply select_forall.
-    *apply H.
-     admit.     
-    *apply forall_permutation.
+   +intros n l0.
+    destruct(select_min n l0) eqn: H'.
+    apply select_min_equiv in H'.
+    apply equiv_implies_Permutation in H'.
+    
 Admitted.   
 
 (** Exercício extra. *)
