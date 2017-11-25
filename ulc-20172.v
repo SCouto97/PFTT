@@ -101,10 +101,18 @@ Lemma one_star_transitive_closure_composition:
     forall t u v, t ->_B u -> u ->*B v -> t ->*B v.
 Proof.
   intros t0 u v H1 H2.
-  apply star_trans_reduction.
-  apply one_step_reduction.
-  admit.
-Admitted.    
+  generalize dependent t0.
+  induction t0.
+  -intros.
+   admit.
+  -intro.
+   admit.
+  -intro.
+   admit.
+  -intro.
+   admit.
+
+Admitted.
 
 Lemma star_transitive_closure_composition:
     forall t u v, t ->+B u -> u ->*B v -> t ->*B v.
@@ -113,12 +121,15 @@ Proof.
   intro H.
   induction H.
   -intro.
-   apply star_trans_reduction.
-   apply one_step_reduction.
-   admit.
+   apply one_star_transitive_closure_composition with u.
+   +assumption.
+   +assumption.
   -intros H1.
    apply IHtransitive_closure_beta in H1.
-Admitted.      
+   apply one_star_transitive_closure_composition with u.
+   +assumption.
+   +assumption.
+Qed.
 
 Lemma star_closure_composition:
     forall t u v, t ->*B u -> u ->*B v -> t ->*B v.
@@ -129,4 +140,10 @@ Axiom strip_lemma: forall (t t1 t2:tm), (t ->_B t1) /\ (t ->*B t2) -> (exists t3
   
 Theorem confluence: forall (t t1 t2:tm), (t ->*B t1) -> (t ->*B t2) -> (exists t3: tm, (t1 ->*B t3) /\ (t2 ->*B t3)). 
 Proof.
+  intros t0 t1 t2 H H'.
+  generalize dependent t2.
+  induction H.
+  -intros t2 H1.
+   
+  -
 Admitted.
